@@ -16,6 +16,7 @@ from PyQt5 import QtCore
 import sys
 import typing
 import os
+import datetime
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
@@ -33,70 +34,91 @@ class mainWindow(QMainWindow):
 
         self.deviceList = []
 
+        # main window
         self.setWindowTitle(title)
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
 
+
+        # Menu bar
         self.mainMenu = self.menuBar()
+            
+            # Sub menu - connect
+        self.menu_connect = self.mainMenu.addMenu("Connect")
         
+                # Sub menu - connect - Refresh item 1
         self.btn_refresh = QAction(QIcon(f"{icon_path}/arrow-circle-double.png"), "Refresh", self)
         self.btn_refresh.setStatusTip("Click to check for any new Phobos/Titania connected")
         self.btn_refresh.triggered.connect(self.updatedConnectedDeviceList)
-        
-        self.menu_connect = self.mainMenu.addMenu("Connect")
         self.menu_connect.addAction(self.btn_refresh)
         self.menu_connect.addSeparator()
-
+        
+            # Sub menu - Stereo
         self.btn_stereo = QAction("Stereo", self)
         self.btn_stereo.setStatusTip("Check stereo image")
-        #self.btn_stereo.setCheckable(True)
         self.mainMenu.addAction(self.btn_stereo)
 
+            # Sub menu - Point cloud
         self.btn_pointCloud = QAction("Point cloud", self)
         self.btn_pointCloud.setStatusTip("Check stereo image")
-        #self.btn_pointCloud.setCheckable(True)
         self.mainMenu.addAction(self.btn_pointCloud)   
 
+            # Sub menu - Preferences
         self.btn_preferences = QAction("Preferences", self)
         self.mainMenu.addAction(self.btn_preferences)
 
-        self.tab_disp_split = QSplitter()
 
-        self.mainDispFrame = QFrame()
-        self.widgetFrame = QFrame()
-        self.widgetExpansionFrame = QFrame()
-
-        #self.tab_disp_split.addWidget(self.msgConsole)
-        self.tab_disp_split.addWidget(self.widgetFrame)
-        self.tab_disp_split.addWidget(self.widgetExpansionFrame)
-        self.tab_disp_split.addWidget(self.mainDispFrame)
-
+        # Bottom console
         self.msgConsole = QTabWidget()
-        self.tabProblems = consolelog()
-        self.tabProblems.initGui("[System] System initiated...")
+
+            # Bottom console - log data
         self.tabLog = consolelog()
-        self.tabLog.initGui("[System] System initiated...")
-        self.msgConsole.addTab(self.tabProblems, "Problems")
+        self.tabLog.subInit("[System] System initiated...")
         self.msgConsole.addTab(self.tabLog, "Log")
 
+            # Bottom console - problems data
+        self.tabProblems = consolelog()
+        self.tabProblems.subInit("[System] System initiated...")
+        self.msgConsole.addTab(self.tabProblems, "Problems")
+
+            # Bottom toolbar - compile
         self.toolbar = QToolBar(self)
         self.toolbar.addWidget(self.msgConsole)
         self.toolbar.setMinimumHeight(100)
         self.addToolBar(QtCore.Qt.BottomToolBarArea, self.toolbar)
 
+        
+        # Main window
+        self.tab_disp_split = QSplitter()
+
+            # Sub widget frame
+        self.widgetFrame = QWidget()
+        btn = QAction("btun", self)
+        self.widgetFrame.addAction(self.btn_pointCloud)
+        self.widgetFrame.setStyleSheet("background-color: red")
+        lbl = QLabel()
+        lbl.setText("Hello world")
+        self.tab_disp_split.addWidget(self.widgetFrame)
+
+            # Sub widget expantion frame
+        self.widgetExpansionFrame = QFrame()
+        self.tab_disp_split.addWidget(self.widgetExpansionFrame)
+
+            # Sub main display frame
+        self.mainDispFrame = QFrame()
+        self.tab_disp_split.addWidget(self.mainDispFrame)
+
         self.setCentralWidget(self.tab_disp_split)
         self.updatedConnectedDeviceList()
     
     def updatedConnectedDeviceList(self):
-        self.tabLog.update_txt("[Event] Refreshing device list")
-        #self.tabProblems.update_txt("[TBDL] Update connected device list")
-        #self.updateIndividualDeviceList("Phobos")
         for i in self.deviceList:
             del i
         device_infos = phase.stereocamera.availableDevices()
         if len(device_infos) <=0 :
             self.tabLog.update_txt("[System] No device found")
-            #self.menu_connect
+            for i in self.deviceList:
+                del i
         else:
             for device in device_infos:
                 self.updateIndividualDeviceList(device)
@@ -119,13 +141,24 @@ class mainWindow(QMainWindow):
         self.name = name
         return
     
+class subWidgetFrame(QFrame):
+    def __init__(self):
+        super().__init__()
+        return
+    
+    def subInit(self, self_):
+        self.btn_file = QAction("Files", self_)
+        self.addAction(self.btn_file)
+        return
+    
+
+    
 class consolelog(QScrollArea):
     def _init__(self, txt=None):
         super().__init__()
-        self.initGui()
         return
     
-    def initGui(self, msg = None):
+    def subInit(self, msg = None):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)

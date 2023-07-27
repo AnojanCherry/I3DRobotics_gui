@@ -1,7 +1,0 @@
-Exception has occurred: ImportError
-/home/anojancherry/.local/lib/python3.10/site-packages/phase/i3drsgm/libQt5Core.so.5: version `Qt_5_PRIVATE_API' not found (required by /home/anojancherry/.local/lib/python3.10/site-packages/PyQt5/QtCore.abi3.so)
-  File "/home/anojancherry/Documents/i3dRobotics/I3DRobotics_gui/I3DRobotics_TP_Draft_4.py", line 16, in <module>
-    from PyQt5 import QtCore
-ImportError: /home/anojancherry/.local/lib/python3.10/site-packages/phase/i3drsgm/libQt5Core.so.5: version `Qt_5_PRIVATE_API' not found (required by /home/anojancherry/.local/lib/python3.10/site-packages/PyQt5/QtCore.abi3.so)
-
-
