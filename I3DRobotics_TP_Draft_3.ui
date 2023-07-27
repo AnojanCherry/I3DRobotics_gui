@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>100</y>
+      <width>401</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QWidget" name="widget" native="true">
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>60</y>
+          <width>127</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>19</y>
+          <width>160</width>
+          <height>151</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QWidget" name="widget_3" native="true"/>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_4" native="true">
+           <widget class="QLabel" name="label">
+            <property name="geometry">
+             <rect>
+              <x>80</x>
+              <y>40</y>
+              <width>67</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuConnect">
+    <property name="title">
+     <string>Connect</string>
+    </property>
+    <addaction name="actionRefresh"/>
+   </widget>
+   <widget class="QMenu" name="menuStereo">
+    <property name="title">
+     <string>Stereo</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuPoint_cloud">
+    <property name="title">
+     <string>Point cloud</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>Preferences</string>
+    </property>
+   </widget>
+   <addaction name="menuConnect"/>
+   <addaction name="menuStereo"/>
+   <addaction name="menuPoint_cloud"/>
+   <addaction name="menuPreferences"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionRefresh">
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
