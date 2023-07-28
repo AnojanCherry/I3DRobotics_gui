@@ -17,13 +17,14 @@ import sys
 import typing
 import os
 import datetime
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
 
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QWidget,
     QAction, QSplitter, QTabWidget, QFrame,
-    QLabel, QToolBar,QTreeWidget, QScrollArea
+    QLabel, QToolBar,QTreeWidget, QScrollArea,
+    QVBoxLayout, QHBoxLayout
 )
 
 import phase.pyphase as phase
@@ -67,56 +68,40 @@ class mainWindow(QMainWindow):
         self.btn_preferences = QAction("Preferences")
         self.mainMenu.addAction(self.btn_preferences)
 
-
-        # Bottom console
-        self.msgConsole = QTabWidget()
-
-            # Bottom console - log data
-        self.tabLog = consolelog()
-        self.tabLog.subInit("[System] System initiated...")
-        self.msgConsole.addTab(self.tabLog, "Log")
-
-            # Bottom console - problems data
-        self.tabProblems = consolelog()
-        self.tabProblems.subInit("[System] System initiated...")
-        self.msgConsole.addTab(self.tabProblems, "Problems")
-
-            # Bottom toolbar - compile
-        self.toolbar = QToolBar(self)
-        self.toolbar.addWidget(self.msgConsole)
-        self.toolbar.setMinimumHeight(100)
-        self.addToolBar(QtCore.Qt.BottomToolBarArea, self.toolbar)
-
         
         # Main window
-        self.tab_disp_split = QSplitter()
+        self.mainWidget = QWidget()
+        self.layoutV = QVBoxLayout()
+        self.mainWidget.setLayout(self.layoutV)
+        self.setCentralWidget(self.mainWidget)
 
-            # Sub widget frame
-        self.widgetFrame = QWidget()
-        btn = QAction("btun")
-        self.widgetFrame.addAction(self.btn_pointCloud)
-        self.widgetFrame.setStyleSheet("background-color: red")
-        lbl = QLabel()
-        lbl.setText("Hello world")
-        self.tab_disp_split.addWidget(self.widgetFrame)
+        # Top widgets
+        self.top_widget = QWidget()
+        self.top_widget.setMaximumHeight(35)
+        self.top_widget.setMaximumWidth(60)
+        self.layoutHSpliter = top_options(self.top_widget)
+        self.layoutV.addWidget(self.top_widget)
 
-            # Sub widget expantion frame
-        self.widgetExpansionFrame = QFrame()
-        self.tab_disp_split.addWidget(self.widgetExpansionFrame)
+        # Main widget
+        self.mainDispWidget = QWidget()
+        self.layoutV.addWidget(self.mainDispWidget)
 
-            # Sub main display frame
-        self.mainDispFrame = QFrame()
-        self.tab_disp_split.addWidget(self.mainDispFrame)
+        # Console/Log widget
+        #self.console_widget = QWidget()
+        #self.layoutV.addWidget(self.console_widget)
+        #self.console_widget.setStyleSheet("background-color:red")
+        #self.updatedConnectedDeviceList()
 
-        self.setCentralWidget(self.tab_disp_split)
-        self.updatedConnectedDeviceList()
-    
     def updatedConnectedDeviceList(self):
+        # Before updating delete all current selected files
         for i in self.deviceList:
             del i
+
+        # Get all connected cams
         device_infos = phase.stereocamera.availableDevices()
-        if len(device_infos) <=0 :
-            self.tabLog.update_txt("[System] No device found")
+        if not(len(device_infos) <=0) :
+            #self.tabLog.update_txt("[System] No device found")
+            print("[TBDL] No device found!")
             for i in self.deviceList:
                 del i
         else:
@@ -133,51 +118,57 @@ class mainWindow(QMainWindow):
             print("Right Serial: " + device_info.getRightCameraSerial())
         '''
         return
-    
-    def getName(self):
-        return self.name
-    
-    def setName(self, name):
-        self.name = name
-        return
-    
-class subWidgetFrame(QFrame):
-    def __init__(self):
-        super().__init__()
-        return
-    
-    def subInit(self, self_):
-        self.btn_file = QAction("Files", self_)
-        self.addAction(self.btn_file)
-        return
-    
 
-    
-class consolelog(QScrollArea):
-    def _init__(self, txt=None):
-        super().__init__()
+class top_options():
+    def __init__(self, parent):
+        self.layout = QHBoxLayout()
+        parent.setLayout(self.layout)
+        #self.main = QSplitter(parent)
+        #self.main.setOrientation(Qt.Horizontal)
+
+        # Connect to a device
+        self.tlbar_connect = top_option_sub("Calibrate")
+        self.tlbar_connect.setPixMap("plug-disconnect-prohibition.png","plug-connect.png")
+        self.tlbar_connect.setTip("No device Connected! Connect>Refresh")
+        self.tlbar_connect.changeImg(False)
+        self.layout.addWidget(self.tlbar_connect.lbl)
+
+        # Calibration files
+        self.tlbar_cal = top_option_sub("Calibrate")
+        self.tlbar_cal.setPixMap("blue-folder--minus.png","blue-folder--plus.png")
+        self.tlbar_cal.setTip("Select calibration files")
+        self.tlbar_cal.changeImg(False)
+        self.layout.addWidget(self.tlbar_cal.lbl)
+        return
+
+class top_option_sub():
+    def __init__(self, name):
+        self.lbl = QLabel(name)
         return
     
-    def subInit(self, msg = None):
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setWidgetResizable(True)
-        self.lbl = QLabel()
-        self.setWidget(self.lbl)
-        self.txt = []
-        self.maxLine = 50
-        if msg != None:
-            self.update_txt(msg)
+    def setPixMap(self, pxmap0, pxmap1):
+        self.pxmap_path_0 = icon_path+"/"+pxmap0
+        self.pxmap_path_1 = icon_path+"/"+pxmap1
         return
     
-    def update_txt(self, txt):
-        if len(self.txt)>= self.maxLine:
-            del self.txt[0]
-        self.txt.append(txt)
-        str = ""
-        for i in self.txt:
-            str+=i+"\n"
-        self.lbl.setText(str)
+    def setTip(self, tip_0=None, tip_1=None):
+        self.tip_0 = tip_0
+        self.tip_1 = tip_1
+        return
+    
+    def setAction(self, function):
+        return
+    
+    def changeImg(self, bol):
+        self.bol = bol
+        if bol:
+            self.lbl.setPixmap(QPixmap(self.pxmap_path_1))
+            if (self.tip_1 != None):
+                self.lbl.setToolTip(self.tip_1)
+        else:
+            self.lbl.setPixmap(QPixmap(self.pxmap_path_0))
+            if (self.tip_0 != None):
+                self.lbl.setToolTip(self.tip_0)
         return
 
 # Current files folder
