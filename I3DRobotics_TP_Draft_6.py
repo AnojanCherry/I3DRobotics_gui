@@ -97,6 +97,24 @@ class mainWindow(QMainWindow):
         #self.updatedConnectedDeviceList()
     
     def initialiseStereoFrame(self):
+        self.CalibrationFileUpdator()
+        self.stereoDataBuffer()
+        return
+    
+    def CalibrationFileUpdator(self):
+        self.left_yaml = None
+        self.right_yaml = None
+        for i in os.listdir(cff):
+            if ("left" in i) and (".yaml" in i):
+                self.left_yaml = cff+"/left.yaml"
+            if ("right" in i) and (".yaml" in i):
+                self.right_yaml = cff+"/right.yaml"
+        return
+    
+    def CalibrationFileUpdatorManual(self):
+        return
+    
+    def stereoDataBuffer(self):
         device_class = self.deviceList[self.deviceInd]
         device_info = device_class.device
         camera_name = device_info.getUniqueSerial()
@@ -106,8 +124,8 @@ class mainWindow(QMainWindow):
         interface_type = phase.stereocamera.CameraInterfaceType.INTERFACE_TYPE_USB
 
         # setupCalibration files
-        left_yaml = cff+"/left.yaml"
-        right_yaml = cff+"/right.yaml"
+        left_yaml = self.left_yaml
+        right_yaml = self.right_yaml
 
         # Define parameters for read process
         downsample_factor = 1.0
@@ -229,7 +247,7 @@ class mainWindow(QMainWindow):
         return
     
     def updateIndividualDeviceList(self, device):
-        self.deviceList.append(Devices(self, device.getUniqueSerial(), device))
+        self.deviceList.append(Devices(self, device.getUniqueSerial(), device, len(self.deviceList)))
         #self.tabLog.update_txt(f"[Event] added {device.getUniqueSerial()}")
         '''
             print("Camera Name: " + device_info.getUniqueSerial())
@@ -237,9 +255,6 @@ class mainWindow(QMainWindow):
             print("Right Serial: " + device_info.getRightCameraSerial())
         '''
         return
-
-    def getListNum(self):
-        return len(self.deviceList)
     
     def setChosenDevice(self, deviceInd):
         self.deviceInd = deviceInd
@@ -312,7 +327,7 @@ class top_option_sub():
         return
 
 class Devices:
-    def __init__(self, self_, name, device):
+    def __init__(self, self_, name, device, deviceInd):
         self.name = name
         self.parent = self_
         self.device = device
