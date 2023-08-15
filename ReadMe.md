@@ -8,12 +8,12 @@ To start up either download the files or run the following command in a terminal
 You can either download the file and extract it in a folder or run the following command to download the files.
 
 ```bash
-  git clone https://github.com/AnojanCherry/I3DRobotics_gui.git
+git clone https://github.com/AnojanCherry/I3DRobotics_gui.git
 ```
 ### dependencies
 The project depends on the python libraries such as Phase, pyqt5, opencv, open3d and numpy. to install these run the following commands.
 ```bash
-    pip install pyqt5-tools opencv-python open3d numpy
+pip install pyqt5-tools opencv-python open3d numpy
 ```
 
 An alternative way to download phase is provided in the following link.
