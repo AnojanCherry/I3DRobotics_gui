@@ -1,5 +1,11 @@
 # I3DRobotics_gui
 GUI for Phobos and Titania
+
+dependencies:
+  pip install pyqt5-tools opencv-python open3d numpy
+  pip install phase
+  follow the link to download phase, if the above doesnt work.https://github.com/i3drobotics/pyphase
+
 run 
   git clone https://github.com/AnojanCherry/I3DRobotics_gui.git
   then run the "RunMe.py"
