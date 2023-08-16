@@ -1,17 +1,21 @@
 
 # I3DRobotics
-The objective is to create a simple gui that lets user connect to a camera and display its content to its users.
-To start up either download the files or run the following command in a terminal
+The objective is to create a simple gui that lets user connect to a Phobos/Titania and display its content to its users, while allowing user to capture/record the data.
+
+### Table of contents
+1. [Installation](#installation)
+2. [Dependencies](#dependencies)
 
 ## Installation
-
-You can either download the file and extract it in a folder or run the following command to download the files.
-
+Run the following command in your prefered working directory.
 ```bash
 git clone https://github.com/AnojanCherry/I3DRobotics_gui.git
 ```
-### dependencies
-The project depends on the python libraries such as Phase, pyqt5, opencv, open3d and numpy. to install these run the following commands.
+alternatively you can download the files as a zip and extract it to your working directory.
+
+## Dependencies
+
+The project depends on the python libraries such as Phase, pyqt5, opencv, open3d and numpy. To install these run the following command.
 ```bash
 pip install pyqt5-tools opencv-python open3d numpy
 ```
@@ -21,11 +25,15 @@ An alternative way to download phase is provided in the following link.
     
 ## Running the software
 ### Starting
-  Run the "RunMe.py" to start the program. To search for a connected device press refresh. and to establish a connection and start streaming, presh connect. Press again to disconnect.
+  1. Run the "RunMe.py" to start the program. 
+  2. Mount the Phobos/Titania and then press refresh. 
+  3. Select the device from the drop down and then press connect. Press again to disconnect.
+  4. Ensure that the right.yaml and left.yaml file are in the pysupport folder. Press rectify to rectify (needs yaml files). stereo and point cloud can then be navigated from there. 
 
-  Ensure that right and left yaml file are in the pysupport folder. Press rectify to rectify (needs yaml files). stereo and point cloud can then be navigated from there. 
+  Exposure can be adjusted through out the connection. 
 
-  Exposure, downsample and sample factor can be adjusted through out the connection. 
-
-  ### Output
-  data can be recorded/captured throught the session, these data are then saved in pysupport/misc. Time elapsed stamp are printed in the file name.
+  ### Record/Capture
+  Data can be recorded/captured throught the session, these data are then saved in pysupport/misc/*. Time elapsed stamp are printed in the file name.
+  
+  Catpure - Single shot.<br/>
+  Record - Save all data in a continous stream.
