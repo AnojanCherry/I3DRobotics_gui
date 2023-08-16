@@ -87,8 +87,8 @@ class Stream(QThread):
 
             # Connect camera and start data capture
             #print("Connecting to camera...")
-            self.deviceCam.enableHardwareTrigger(False)
             ret = self.deviceCam.connect()
+            self.deviceCam.enableHardwareTrigger(False)
             if (ret):
                 self.deviceCam.startCapture()
 
