@@ -5,6 +5,9 @@ The objective is to create a simple gui that lets user connect to a Phobos/Titan
 ### Table of contents
 1. [Installation](#installation)
 2. [Dependencies](#dependencies)
+3. [Running the software](#running-the-software)
+    1. [Starting](#Starting)
+    2. [Record/Capture](#recordcapture)
 
 ## Installation
 Run the following command in your prefered working directory.
