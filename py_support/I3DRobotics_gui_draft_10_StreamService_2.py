@@ -78,100 +78,110 @@ class Stream(QThread):
         return
     
     def run(self):
+        except_counter = 0
         while self.infinitie_loop_bool:
-            #print("Stream initiated")
-            while self.pause:
-                time.sleep(1)
-            #print("Starting stream")
-            pass
+            try:
+                #print("Stream initiated")
+                while self.pause:
+                    time.sleep(1)
+                #print("Starting stream")
+                pass
 
-            # Connect camera and start data capture
-            #print("Connecting to camera...")
-            ret = self.deviceCam.connect()
-            self.deviceCam.enableHardwareTrigger(False)
-            if (ret):
-                self.deviceCam.startCapture()
+                # Connect camera and start data capture
+                #print("Connecting to camera...")
+                ret = self.deviceCam.connect()
+                self.deviceCam.enableHardwareTrigger(False)
+                if (ret):
+                    self.deviceCam.startCapture()
 
-                # Set camera exposure value
-                self.deviceCam.setExposure(self.exposure_value)
-                #print("Running camera capture...")
+                    # Set camera exposure value
+                    self.deviceCam.setExposure(self.exposure_value)
+                    #print("Running camera capture...")
 
-                while self.deviceCam.isConnected():
-                    read_result = self.deviceCam.read()
-                    if read_result.valid:
-                        # Rectify stereo image pair
-                        self.img_left_raw = read_result.left
-                        self.img_right_raw = read_result.right
-                        if not(self.stream_rectify_var):
-                            #cv2.imshow("left", self.img_left_raw)
-                            #cv2.imshow("right", self.img_right_raw)
-                            #cv2.waitKey(1)
-                            self.update_Stream_frame_img([self.img_left_raw,self.img_right_raw])
-                            if self.record_data_bool:
-                                self.record_data(1)
-                        if self.stream_rectify_var:
-                            rect_image_pair = self.calibration.rectify(self.img_left_raw, self.img_right_raw)
-                            self.rect_img_left = rect_image_pair.left
-                            self.rect_img_right = rect_image_pair.right
-
-                            img_left = phase.scaleImage(self.rect_img_left, self.display_downsample*self.downsample_factor)
-                            img_right = phase.scaleImage(self.rect_img_right, self.display_downsample*self.downsample_factor)
-                        if (self.stream_rectify_var and not(self.stream_stereo_var)):
-                            self.update_Stream_frame_img([img_left,img_right])
-                            if self.record_data_bool:
-                                self.record_data(2)
-                        if self.stream_stereo_var: 
-                            #print(self.stream_stereo_var)
-                            match_result = self.matcher.compute(self.rect_img_left, self.rect_img_right)
-                        # Check compute is valid
-                            if not match_result.valid:
-                                print("Failed to compute match")
-                            
-                            # Find the disparity from matcher   
-                            disparity = match_result.disparity
-
-                            # Convert disparity into 3D pointcloud
-                            self.xyz = phase.disparity2xyz(disparity, self.calibration.getQ())
-                            self.img_disp = phase.scaleImage(phase.normaliseDisparity(disparity), self.display_downsample)
-                            
-                            if not(self.point_cloud):
-                                # Display stereo and disparity images
-                                self.update_Stream_frame_img([img_left,self.img_disp])
+                    while self.deviceCam.isConnected():
+                        read_result = self.deviceCam.read()
+                        if read_result.valid:
+                            # Rectify stereo image pair
+                            self.img_left_raw = read_result.left
+                            self.img_right_raw = read_result.right
+                            if not(self.stream_rectify_var):
+                                #cv2.imshow("left", self.img_left_raw)
+                                #cv2.imshow("right", self.img_right_raw)
+                                #cv2.waitKey(1)
+                                self.update_Stream_frame_img([self.img_left_raw,self.img_right_raw])
                                 if self.record_data_bool:
-                                    self.record_data(3)
-                            else:
-                                if (self.vis == False):
-                                    self.vis = o3d.visualization.VisualizerWithEditing()
-                                    self.vis.create_window(width=800, height=600)
-                                #file_name = os.path.join(self.pcDataFolder,f"pointCloud dataset _ {self.sessionId} _{time.time()}.ply")
-                                file_name = os.path.join(self.pcDataFolder,"pointCloud_dataset.ply")
-                                save_success = phase.savePLY(file_name, self.xyz, self.rect_img_left)
+                                    self.record_data(1)
+                            if self.stream_rectify_var:
+                                rect_image_pair = self.calibration.rectify(self.img_left_raw, self.img_right_raw)
+                                self.rect_img_left = rect_image_pair.left
+                                self.rect_img_right = rect_image_pair.right
+
+                                img_left = phase.scaleImage(self.rect_img_left, self.display_downsample*self.downsample_factor)
+                                img_right = phase.scaleImage(self.rect_img_right, self.display_downsample*self.downsample_factor)
+                            if (self.stream_rectify_var and not(self.stream_stereo_var)):
+                                self.update_Stream_frame_img([img_left,img_right])
                                 if self.record_data_bool:
-                                    self.record_data(4)
-                                if (save_success):
-                                    pcd = o3d.io.read_point_cloud(file_name)
-                                    self.vis.clear_geometries()
-                                    self.vis.add_geometry(pcd)
-                                    self.vis.update_geometry(pcd)
-                                    self.vis.update_renderer()
-                                    self.vis.poll_events()
+                                    self.record_data(2)
+                            if self.stream_stereo_var: 
+                                #print(self.stream_stereo_var)
+                                match_result = self.matcher.compute(self.rect_img_left, self.rect_img_right)
+                            # Check compute is valid
+                                if not match_result.valid:
+                                    print("Failed to compute match")
+                                
+                                # Find the disparity from matcher   
+                                disparity = match_result.disparity
 
-                                    #self.run3DSim()
-                                #spcw(xyz)
-                                #self.plot3Ddata(xyz)
-                                #self.pc_tbdl_widget = streamPC(self.parentWidget.width(),self.parentWidget.height())
-                                #self.layout.addWidget(self.pc_tbdl_widget)
-                                ##print("5 HERE")
-                                #self.update_Stream_frame_img(xyz,"single")
+                                # Convert disparity into 3D pointcloud
+                                self.xyz = phase.disparity2xyz(disparity, self.calibration.getQ())
+                                self.img_disp = phase.scaleImage(phase.normaliseDisparity(disparity), self.display_downsample)
+                                
+                                if not(self.point_cloud):
+                                    # Display stereo and disparity images
+                                    self.update_Stream_frame_img([img_left,self.img_disp])
+                                    if self.record_data_bool:
+                                        self.record_data(3)
+                                else:
+                                    if (self.vis == False):
+                                        self.vis = o3d.visualization.VisualizerWithEditing()
+                                        self.vis.create_window(width=800, height=600)
+                                    #file_name = os.path.join(self.pcDataFolder,f"pointCloud dataset _ {self.sessionId} _{time.time()}.ply")
+                                    file_name = os.path.join(self.pcDataFolder,"pointCloud_dataset.ply")
+                                    save_success = phase.savePLY(file_name, self.xyz, self.rect_img_left)
+                                    if self.record_data_bool:
+                                        self.record_data(4)
+                                    if (save_success):
+                                        pcd = o3d.io.read_point_cloud(file_name)
+                                        self.vis.clear_geometries()
+                                        self.vis.add_geometry(pcd)
+                                        self.vis.update_geometry(pcd)
+                                        self.vis.update_renderer()
+                                        self.vis.poll_events()
 
-                    else:
-                        self.deviceCam.disconnect()
-                        raise Exception("Failed to read stereo result")
-                    if self.pause:
-                        self.deviceCam.disconnect()
-                        #out.release()
-                        #out2.release()
-                        break
+                                        #self.run3DSim()
+                                    #spcw(xyz)
+                                    #self.plot3Ddata(xyz)
+                                    #self.pc_tbdl_widget = streamPC(self.parentWidget.width(),self.parentWidget.height())
+                                    #self.layout.addWidget(self.pc_tbdl_widget)
+                                    ##print("5 HERE")
+                                    #self.update_Stream_frame_img(xyz,"single")
+
+                        else:
+                            self.deviceCam.disconnect()
+                            raise Exception("Failed to read stereo result")
+                        if self.pause:
+                            self.deviceCam.disconnect()
+                            #out.release()
+                            #out2.release()
+                            break
+                except_counter = 0
+            except Exception as e:
+                except_counter += 1
+                if except_counter <5:
+                    print(str(e))
+                else:
+                    raise Exception(str(e))
+        
         return
 
     def update_Device(self, chosenCamClass=False):
