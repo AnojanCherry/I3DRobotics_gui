@@ -19,6 +19,7 @@ class Stream(QThread):
     downsample_factor = 1.0
     display_downsample = 0.25
     exposure_value = 10000
+    except_counter_max = 5
 
     pcSimStarted = False
     vis = False
@@ -78,8 +79,8 @@ class Stream(QThread):
         return
     
     def run(self):
-        except_counter_max = 5
         while self.infinitie_loop_bool:
+            except_counter = 0
             try:
                 #print("Stream initiated")
                 while self.pause:
@@ -177,10 +178,9 @@ class Stream(QThread):
                 except_counter = 0
             except Exception as e:
                 except_counter += 1
-                if except_counter <self.except_counter_max:
-                    print(str(e))
-                else:
-                    raise Exception(str(e))
+                print(str(except_counter)+". "+str(e))
+                if except_counter >= self.except_counter_max:
+                    raise Exception(str(except_counter)+". "+str(e))
         
         return
 
