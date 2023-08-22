@@ -78,7 +78,7 @@ class Stream(QThread):
         return
     
     def run(self):
-        except_counter = 0
+        except_counter_max = 5
         while self.infinitie_loop_bool:
             try:
                 #print("Stream initiated")
@@ -177,7 +177,7 @@ class Stream(QThread):
                 except_counter = 0
             except Exception as e:
                 except_counter += 1
-                if except_counter <5:
+                if except_counter <self.except_counter_max:
                     print(str(e))
                 else:
                     raise Exception(str(e))
