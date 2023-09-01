@@ -39,6 +39,7 @@ class mainDisp(Ui_mainWindow):
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.toolbar.addWidget(self.toolbar_main.gridLayoutWidget)
 
+        # Stream controls everything related to connecting to camera to displaying videos  
         self.Stream = Stream(self.mainDisplay, self)
         self.Stream.start()
 
