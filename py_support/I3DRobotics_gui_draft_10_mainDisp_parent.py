@@ -19,6 +19,7 @@ class mainDisp(Ui_mainWindow):
     ChosenDevice_id = False
     device_list = []
 
+    # When the window is resized, resize the frames aswell
     def resizeEvent(self, a0):
         try:
             self.Stream.WindowresizeEvent()
@@ -28,8 +29,10 @@ class mainDisp(Ui_mainWindow):
 
     def __init__(self):
         super(mainDisp, self).__init__()
+        # This class inherits from ui_mainwindow class line 16
         self.setupUi()
 
+        # Everything inside toolbar are in child class "toolbar_widgets"
         self.toolbar = QToolBar("Tools")
         self.toolbar_main = toolbar_widgets(self)
         self.toolbar_main.btn_devices_refresh.clicked.connect(self.event_refresh_clicked)

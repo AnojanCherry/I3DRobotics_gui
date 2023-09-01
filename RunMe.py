@@ -7,6 +7,8 @@ import sys
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    # Creates a main disp object
     ui = mainDisp()
     ui.show()
     sys.exit(app.exec_())
