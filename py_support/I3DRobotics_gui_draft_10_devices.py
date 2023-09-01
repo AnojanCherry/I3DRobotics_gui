@@ -6,6 +6,8 @@ import phase.pyphase as phase
 
 import os
 
+# A simple device class to hold each and individual device data
+
 class Devices():
     def __init__(self, parent, device, id):
         self.parent = parent
