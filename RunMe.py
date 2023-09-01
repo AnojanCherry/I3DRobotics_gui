@@ -1,3 +1,15 @@
+'''
+
+    @Author Anojan Raveendran
+    @email  anojan.raveendran@city.ac.uk
+    @brief  A simple gui to display data from camera
+
+    References:
+        https://www.pythonguis.com/tutorials/pyqt-actions-toolbars-menus/
+        https://p.yusukekamiyamane.com/
+
+'''
+
 from py_support.I3DRobotics_gui_draft_10_mainDisp_parent import mainDisp
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow
