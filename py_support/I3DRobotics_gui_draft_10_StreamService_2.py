@@ -5,8 +5,6 @@ from PyQt5.QtWidgets import (
     QWidget, QHBoxLayout, QLabel
 )
 
-from datetime import datetime
-
 import phase.pyphase as phase
 
 import time, cv2, os, random
@@ -21,15 +19,15 @@ class Stream(QThread):
     downsample_factor = 1.0
     display_downsample = 0.25
     exposure_value = 10000
-    except_counter_max = 5
 
     pcSimStarted = False
     vis = False
-    subfold = False
 
     record_data_bool = False
 
-    self.pcDataFolder = self.setup_data_folder()
+    for dirpath, dirnames, filenames in os.walk("."):
+        if "misc" in dirpath:
+            pcDataFolder = dirpath
     
     def file_exists(self, file_to_check):
         for dirpath, dirnames, filenames in os.walk("."):
@@ -40,21 +38,6 @@ class Stream(QThread):
                     if file_to_check in file:
                          return True
         return False
-
-    def setup_data_folder(self):
-        for dirpath, dirnames, filenames in os.walk("."):
-            if "misc" in dirpath:
-                currentSecond= datetime.now().second
-                currentMinute = datetime.now().minute
-                currentHour = datetime.now().hour
-                
-                currentDay = datetime.now().day
-                currentMonth = datetime.now().month
-                currentYear = datetime.now().year
-                
-                if self.subfold:dispath = os.path.join(currentYear, currentMonth, currentDay, currentHour, dirpath)
-                os.makedirs(dirpath, exist_ok=True)
-        return dispath
                 
     def setupFile(self):
         while True:
@@ -95,8 +78,8 @@ class Stream(QThread):
         return
     
     def run(self):
+        except_counter_max = 5
         while self.infinitie_loop_bool:
-            except_counter = 0
             try:
                 #print("Stream initiated")
                 while self.pause:
@@ -163,7 +146,6 @@ class Stream(QThread):
                                         self.vis = o3d.visualization.VisualizerWithEditing()
                                         self.vis.create_window(width=800, height=600)
                                     #file_name = os.path.join(self.pcDataFolder,f"pointCloud dataset _ {self.sessionId} _{time.time()}.ply")
-                                    self.pcDataFolder = self.setup_data_folder()
                                     file_name = os.path.join(self.pcDataFolder,"pointCloud_dataset.ply")
                                     save_success = phase.savePLY(file_name, self.xyz, self.rect_img_left)
                                     if self.record_data_bool:
@@ -195,9 +177,10 @@ class Stream(QThread):
                 except_counter = 0
             except Exception as e:
                 except_counter += 1
-                print(str(except_counter)+". "+str(e))
-                if except_counter >= self.except_counter_max:
-                    raise Exception(str(except_counter)+". "+str(e))
+                if except_counter <self.except_counter_max:
+                    print(str(e))
+                else:
+                    raise Exception(str(e))
         
         return
 
@@ -318,7 +301,6 @@ class Stream(QThread):
         return
     
     def capture_data(self, capture):
-        self.pcDataFolder = self.setup_data_folder()
         fileFolder = self.pcDataFolder
         tme = time.time()
         if not(self.stream_rectify_var):
@@ -346,7 +328,6 @@ class Stream(QThread):
         return False
     
     def record_data(self, id):
-        self.pcDataFolder = self.setup_data_folder()
         fileFolder = self.pcDataFolder
         tme = time.time()
         if id>=1:

@@ -48,14 +48,8 @@ class Ui_mainWindow(QtWidgets.QMainWindow):
         self.actionRefresh.setObjectName("actionRefresh")
         self.menuDevice.addAction(self.actionRefresh)
         self.menuDevice.addSeparator()
-        #self.menubar.addAction(self.menuDevice.menuAction())
-        #self.menubar.addAction(self.menuRaw_data.menuAction())
-        #self.menubar.addAction(self.menustereo_data.menuAction())
-        #self.menubar.addAction(self.menupoint_cloud.menuAction())
-        #self.menubar.addAction(self.menuPreferences.menuAction())
 
         self.retranslateUi()
-        #QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

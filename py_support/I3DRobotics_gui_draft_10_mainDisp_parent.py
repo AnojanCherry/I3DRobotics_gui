@@ -16,10 +16,9 @@ import time, os
 class mainDisp(Ui_mainWindow):
     # Chosen Device class
     ChosenDevice = False
-    ChosenDevice_id = False # Device index in device_list variable
-    device_list = []        # list of devices connected
+    ChosenDevice_id = False
+    device_list = []
 
-    # When the window is resized, resize the frames aswell
     def resizeEvent(self, a0):
         try:
             self.Stream.WindowresizeEvent()
@@ -29,81 +28,54 @@ class mainDisp(Ui_mainWindow):
 
     def __init__(self):
         super(mainDisp, self).__init__()
-        # This class inherits from ui_mainwindow class line 16
         self.setupUi()
 
-        # Everything inside toolbar are in child class "toolbar_widgets"
         self.toolbar = QToolBar("Tools")
         self.toolbar_main = toolbar_widgets(self)
         self.toolbar_main.btn_devices_refresh.clicked.connect(self.event_refresh_clicked)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.toolbar.addWidget(self.toolbar_main.gridLayoutWidget)
 
-        # Stream controls everything related to connecting to camera to displaying videos  
         self.Stream = Stream(self.mainDisplay, self)
         self.Stream.start()
 
-        # Checks for any new device connected
         self.event_refresh_clicked()
         return
     
-    # A command to control rectify option in stream
     def event_child_toolbar_rectify_check(self, SetAsTrue):
-        # Validate if a device is connected
         if (self.ChosenDevice==False):
             return False
-        
-        # Validate left yaml file
         elif not(os.path.isfile(self.ChosenDevice.left_yaml)):
             return False
-        
-        # Validate right yaml file
         elif not(os.path.isfile(self.ChosenDevice.right_yaml)):
             return False
-        
-        # if all above condition are met and user requested for rectification, rectify the images
         if SetAsTrue:
             self.Stream.setup_rectifier(self.ChosenDevice.left_yaml,self.ChosenDevice.right_yaml)
             return True
-        
-        # if the user asked to unrectify inform the stream object/class
         else:
             self.Stream.setup_raw()
             return False
         
-    # A command to control stereo option in stream
     def event_child_toolbar_stereo_check(self, SetAsTrue):
-        # validate if a device is connected
         if (self.ChosenDevice==False):
             return False
-        
-        # if all above condition are met and user requested for stereo, dispaly stereo data
         if SetAsTrue:
             self.Stream.setup_stereo()
             return True
-        
-        # if the user asked to stop stereo stream inform the stream object/class
         else:
             self.event_child_toolbar_rectify_check(True)
             return False
         
-    # A command to control stereo option in stream
     def event_child_toolbar_pointCloud_check(self, SetAsTrue):
-        # validate if a device is connected
         if (self.ChosenDevice==False):
             return False
-        
-        # if all above condition are met and user requested for 3D data, dispaly 3D data externally
         if SetAsTrue:
             self.Stream.setup_pointCloud()
             return True
-        
-        # if the user asked to stop 3D stream inform the stream object/class
         else:
             self.event_child_toolbar_stereo_check(True)
             return False
         
-    # Sets a varaible tru in stream such that after one capture its set back to false
     def capture_data(self, capturebool):
         if capturebool:
             return self.Stream.capture_data(capturebool)
