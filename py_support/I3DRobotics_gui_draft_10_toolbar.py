@@ -86,7 +86,7 @@ class Ui_Form(QtWidgets.QWidget):
         self.spnbx_exposure.setMinimum(1)
         self.spnbx_exposure.setMaximum(1000000)
         self.spnbx_exposure.setSingleStep(1000)
-        self.spnbx_exposure.setProperty("value", 1000)
+        self.spnbx_exposure.setProperty("value", 10000)
         self.spnbx_exposure.setObjectName("spnbx_exposure")
         self.gridLayout.addWidget(self.spnbx_exposure, 7, 1, 1, 2)
         self.cbbx_devices = QtWidgets.QComboBox(self.gridLayoutWidget)
