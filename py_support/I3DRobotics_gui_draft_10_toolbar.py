@@ -102,7 +102,7 @@ class Ui_Form(QtWidgets.QWidget):
         self.lbl_device = QtWidgets.QLabel(self.gridLayoutWidget)
         self.lbl_device.setObjectName("lbl_device")
         self.gridLayout.addWidget(self.lbl_device, 1, 0, 1, 1)
-        self.ckbx_capture = QtWidgets.QRadioButton(self.gridLayoutWidget)
+        self.ckbx_capture = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.ckbx_capture.setObjectName("ckbx_capture")
         self.gridLayout.addWidget(self.ckbx_capture, 10, 0, 1, 1)
         self.ckbx_record = QtWidgets.QCheckBox(self.gridLayoutWidget)

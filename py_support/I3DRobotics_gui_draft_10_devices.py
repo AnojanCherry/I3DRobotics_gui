@@ -7,6 +7,18 @@ import phase.pyphase as phase
 import os
 
 class Devices():
+    '''
+    A class that will contain essentials for the camera
+
+    Inheritance:
+        None
+    
+    Parameter:
+        parent
+
+    Return:
+        None
+    '''
     def __init__(self, parent, device, id):
         self.parent = parent
         self.device = device

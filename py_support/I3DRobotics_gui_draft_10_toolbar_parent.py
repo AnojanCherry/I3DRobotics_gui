@@ -4,6 +4,18 @@ from PyQt5.QtWidgets import (
 )
 
 class toolbar_widgets(Ui_Form):
+    '''
+    The widget that is mounted on top of a Qtoolbar
+
+    Parameter:
+        parent (object): The parent class that will create an instance of this class
+    
+    Inheritance:
+        Ui_Form (object): a .ui file to .py file
+
+    Return:
+        None
+    '''
     def __init__(self, parent):
         super(toolbar_widgets, self).__init__()
         self.parent = parent

@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow
 )
 
-import sys
+import sys, pydicom
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -14,12 +14,34 @@ import phase.pyphase as phase
 import time, os
 
 class mainDisp(Ui_mainWindow):
-    # Chosen Device class
+    '''
+    Main container that will connect all other scripts
+
+    Parameter:
+        None
+    
+    Inheritance:
+        Ui_mainWindow (object): a .ui file to .py file
+    
+    Return:
+        None
+    '''
+
+    # 
     ChosenDevice = False
     ChosenDevice_id = False
     device_list = []
 
     def resizeEvent(self, a0):
+        '''
+        When the main gui is resized, resize the image frame
+
+        Parameter:
+            a0: resize parameters that the system pass itself when resizing.
+
+        Return:
+            Bool: returns true or false
+        '''
         try:
             self.Stream.WindowresizeEvent()
         except Exception as e:
@@ -27,6 +49,15 @@ class mainDisp(Ui_mainWindow):
         return super().resizeEvent(a0)
 
     def __init__(self):
+        '''
+        Setup the main gui that has been inherited
+
+        Parameter:
+            None
+        
+        Return:
+            None
+        '''
         super(mainDisp, self).__init__()
         self.setupUi()
 
