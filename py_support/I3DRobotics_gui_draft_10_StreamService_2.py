@@ -80,6 +80,7 @@ class Stream(QThread):
     def run(self):
         except_counter_max = 5
         while self.infinitie_loop_bool:
+            except_counter = 0
             try:
                 #print("Stream initiated")
                 while self.pause:

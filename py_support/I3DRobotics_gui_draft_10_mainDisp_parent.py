@@ -50,7 +50,7 @@ class mainDisp(Ui_mainWindow):
 
     def __init__(self):
         '''
-        Setup the main gui that has been inherited
+        Initiate the main gui
 
         Parameter:
             None
@@ -61,19 +61,30 @@ class mainDisp(Ui_mainWindow):
         super(mainDisp, self).__init__()
         self.setupUi()
 
+        # Toolbar section
         self.toolbar = QToolBar("Tools")
         self.toolbar_main = toolbar_widgets(self)
         self.toolbar_main.btn_devices_refresh.clicked.connect(self.event_refresh_clicked)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.toolbar.addWidget(self.toolbar_main.gridLayoutWidget)
 
+        # Anything and everything that happens in the thread are in here
         self.Stream = Stream(self.mainDisplay, self)
         self.Stream.start()
 
         self.event_refresh_clicked()
         return
     
-    def event_child_toolbar_rectify_check(self, SetAsTrue):
+    def event_child_toolbar_rectify_check(self, SetAsTrue: bool):
+        '''
+        When the user tick/untick rectify, Check if there are any yaml files and a device is connected ,then request the thread to rectify/unrectify.
+
+        Parameter:
+            SetAsTrue (bool):   True - to rectify. False - to n rectify
+        
+        Return:
+            bool - True if rectified, False if unrectified
+        '''
         if (self.ChosenDevice==False):
             return False
         elif not(os.path.isfile(self.ChosenDevice.left_yaml)):
@@ -87,7 +98,16 @@ class mainDisp(Ui_mainWindow):
             self.Stream.setup_raw()
             return False
         
-    def event_child_toolbar_stereo_check(self, SetAsTrue):
+    def event_child_toolbar_stereo_check(self, SetAsTrue: bool):
+        '''
+        When the user tick/untick, Check if a device is connected ,then request the thread to start/stop stereo streaming. if the process fails return false, else return true.
+
+        Parameter:
+            SetAsTrue (bool):   True - to start streaming stereo, False - to stop streaming stereo
+        
+        Return:
+            bool - True if stereo started streaming, False if stereo stopped streaming
+        '''
         if (self.ChosenDevice==False):
             return False
         if SetAsTrue:
@@ -98,6 +118,15 @@ class mainDisp(Ui_mainWindow):
             return False
         
     def event_child_toolbar_pointCloud_check(self, SetAsTrue):
+        '''
+        When the user tick/untick, Check if a device is connected ,then request the thread to start/stop point cloud streaming. if the process fails return false, else return true.
+
+        Parameter:
+            SetAsTrue (bool):   True - to start streaming point cloud, False - to stop streaming point cloud
+        
+        Return:
+            bool - True if point cloud started streaming, False if point cloud stopped streaming
+        '''
         if (self.ChosenDevice==False):
             return False
         if SetAsTrue:
@@ -113,6 +142,16 @@ class mainDisp(Ui_mainWindow):
     
     # Function to execute for when refreshing for devices
     def event_refresh_clicked(self):
+        '''
+        This function would check for currently connected device and update it to the dropdown box
+
+        Parameter:
+            None
+        
+        Return:
+            None
+        '''
+        # Clear the currently connected device list
         self.device_list.clear()
         self.toolbar_main.cbbx_devices.clear()
 
@@ -130,7 +169,7 @@ class mainDisp(Ui_mainWindow):
         if (str(self.ChosenDevice_id) != str(False)):
             self.device_list.append(self.ChosenDevice)
             self.ChosenDevice_id = 0
-            self.device_list[0].id = 0
+            #  self.device_list[0].id = 0
             self.toolbar_main.cbbx_devices.addItem(f"{self.ChosenDevice.id+1}. {self.ChosenDevice.name}")
         if (len(device_infos) <=0) :
             if (str(self.ChosenDevice_id) == str(False)):
@@ -144,13 +183,24 @@ class mainDisp(Ui_mainWindow):
     
     # Connect to chosen Device
     def event_connectORdisconnect_clicked(self):
+        '''
+        When connect/disconnect is pressed, this would then connect/disconnect from the device.
+
+        Parameter:
+            none
+
+        Return:
+            None
+        '''
         print("Attempting connect/Disconnect")
-        if (str(self.ChosenDevice_id) != "False"):
+        if (str(self.ChosenDevice_id) != "False" and (self.ChosenDevice_id>=0)):
             self.ChosenDevice = self.device_list[self.ChosenDevice_id]
         elif (str(self.ChosenDevice_id) == "False"):
             print("Error! no device specified")
+        elif not(self.ChosenDevice_id>=0):
+            print("Error! no device chosen")
             
-        if str(self.ChosenDevice_id) != str(False):
+        if str(self.ChosenDevice_id) != str(False) and (self.ChosenDevice_id>=0):
             if (self.Stream.pause == False):
                 print("Closing connection")
                 self.ChosenDevice.btn_connect.setText("Connect")
@@ -166,4 +216,6 @@ class mainDisp(Ui_mainWindow):
                 self.Stream.update_Device(self.ChosenDevice)
                 self.Stream.pause = False
                 time.sleep(2)
+        else:
+            print()
         return
