@@ -18,7 +18,6 @@ import time, cv2, os, random
 
 import numpy as np
 import open3d as o3d
-#import matplotlib.pyplot as plt
 
 class Stream(QThread):
 
@@ -27,15 +26,19 @@ class Stream(QThread):
     display_downsample = 0.25
     exposure_value = 10000
 
+
     pcSimStarted = False
     vis = False
 
+    # If set to true it will save each processed frame externally
     record_data_bool = False
 
+    # Find the misc folder
     for dirpath, dirnames, filenames in os.walk("."):
         if "misc" in dirpath:
             pcDataFolder = dirpath
     
+    # Check if a given file exists
     def file_exists(self, file_to_check):
         for dirpath, dirnames, filenames in os.walk("."):
                 for filename in [f for f in filenames if (f.endswith(".txt") or f.endswith(".py"))]:
@@ -45,15 +48,13 @@ class Stream(QThread):
                     if file_to_check in file:
                          return True
         return False
-                
+
+    # Name the current session to a random number
     def setupFile(self):
         while True:
             self.sessionId = random.randint(10000000000,99999999999)
             if not(self.file_exists(f"{self.sessionId}")):
                 break
-        #self.sessionSetPath = os.path.join(self.pcDataFolder,f"{self.sessionId}.txt")
-        #with open(self.sessionSetPath, "w") as f:
-        #    f.write(f"session:{self.sessionId}")
 
     def __init__(self, widget, parent):
         super(Stream, self).__init__()
@@ -65,38 +66,25 @@ class Stream(QThread):
         self.parentWidget.setLayout(self.layout)
         self.left_widget = QLabel()
         self.right_widget = QLabel()
-        self
         self.maxFrameWidth = self.left_widget.width()
         self.layout.addWidget(self.left_widget)
         self.layout.addWidget(self.right_widget)
 
         # Reset param
         self.reset_parameters(True)
-        #self.pc_tbdl_widget = QWidget()
-        #self.pc_tbdl_widget.hide()
-        #self.pc_Window_stream = streamPC()
-        #layout.addWidget(self.pc_Window_stream)
-        #self.pc_Window_stream.hide()
-
-        #self.fig = plt.figure()
-        #self.ax = plt.axes(projection='3d')
-        #self.fig.show()
-        #plt.show()
         return
     
     def run(self):
-        except_counter_max = 5
+        except_counter_max = 5 # Number of times error can be ignored
         while self.infinitie_loop_bool:
-            except_counter = 0
+            except_counter = 0 # Error count is reset to 0
             try:
-                #print("Stream initiated")
+                # Since this is a seperate thread, sleep for 1 second and check again until a new device is connected
                 while self.pause:
                     time.sleep(1)
-                #print("Starting stream")
                 pass
 
                 # Connect camera and start data capture
-                #print("Connecting to camera...")
                 ret = self.deviceCam.connect()
                 self.deviceCam.enableHardwareTrigger(False)
                 if (ret):
@@ -104,34 +92,28 @@ class Stream(QThread):
 
                     # Set camera exposure value
                     self.deviceCam.setExposure(self.exposure_value)
-                    #print("Running camera capture...")
 
                     while self.deviceCam.isConnected():
                         read_result = self.deviceCam.read()
                         if read_result.valid:
-                            # Rectify stereo image pair
                             self.img_left_raw = read_result.left
                             self.img_right_raw = read_result.right
-                            if not(self.stream_rectify_var):
-                                #cv2.imshow("left", self.img_left_raw)
-                                #cv2.imshow("right", self.img_right_raw)
-                                #cv2.waitKey(1)
+                            if not(self.stream_rectify_var): # If rectify is false stream raw data
                                 self.update_Stream_frame_img([self.img_left_raw,self.img_right_raw])
-                                if self.record_data_bool:
+                                if self.record_data_bool: # If record is set to true save the raw data
                                     self.record_data(1)
-                            if self.stream_rectify_var:
+                            if self.stream_rectify_var: # If rectify is true rectify data
                                 rect_image_pair = self.calibration.rectify(self.img_left_raw, self.img_right_raw)
                                 self.rect_img_left = rect_image_pair.left
                                 self.rect_img_right = rect_image_pair.right
 
                                 img_left = phase.scaleImage(self.rect_img_left, self.display_downsample*self.downsample_factor)
                                 img_right = phase.scaleImage(self.rect_img_right, self.display_downsample*self.downsample_factor)
-                            if (self.stream_rectify_var and not(self.stream_stereo_var)):
+                            if (self.stream_rectify_var and not(self.stream_stereo_var)): # If stereo is false and rectify is true, stream stereo data
                                 self.update_Stream_frame_img([img_left,img_right])
-                                if self.record_data_bool:
+                                if self.record_data_bool: # If record is set to true save the rectified data
                                     self.record_data(2)
-                            if self.stream_stereo_var: 
-                                #print(self.stream_stereo_var)
+                            if self.stream_stereo_var: # If stereo is true process stereo data from rectified data
                                 match_result = self.matcher.compute(self.rect_img_left, self.rect_img_right)
                             # Check compute is valid
                                 if not match_result.valid:
@@ -147,16 +129,19 @@ class Stream(QThread):
                                 if not(self.point_cloud):
                                     # Display stereo and disparity images
                                     self.update_Stream_frame_img([img_left,self.img_disp])
-                                    if self.record_data_bool:
+                                    if self.record_data_bool:  # If record is set to true save the stereo data
                                         self.record_data(3)
+                                    try:
+                                        self.vis.destroy_window() 
+                                    except: 
+                                        print("")
                                 else:
                                     if (self.vis == False):
                                         self.vis = o3d.visualization.VisualizerWithEditing()
                                         self.vis.create_window(width=800, height=600)
-                                    #file_name = os.path.join(self.pcDataFolder,f"pointCloud dataset _ {self.sessionId} _{time.time()}.ply")
                                     file_name = os.path.join(self.pcDataFolder,"pointCloud_dataset.ply")
                                     save_success = phase.savePLY(file_name, self.xyz, self.rect_img_left)
-                                    if self.record_data_bool:
+                                    if self.record_data_bool:  # If record is set to true save the point cloud data
                                         self.record_data(4)
                                     if (save_success):
                                         pcd = o3d.io.read_point_cloud(file_name)
@@ -165,14 +150,6 @@ class Stream(QThread):
                                         self.vis.update_geometry(pcd)
                                         self.vis.update_renderer()
                                         self.vis.poll_events()
-
-                                        #self.run3DSim()
-                                    #spcw(xyz)
-                                    #self.plot3Ddata(xyz)
-                                    #self.pc_tbdl_widget = streamPC(self.parentWidget.width(),self.parentWidget.height())
-                                    #self.layout.addWidget(self.pc_tbdl_widget)
-                                    ##print("5 HERE")
-                                    #self.update_Stream_frame_img(xyz,"single")
 
                         else:
                             self.deviceCam.disconnect()
@@ -297,11 +274,8 @@ class Stream(QThread):
             self.right_widget.resize(self.labelWidth,self.labelHeight)
 
     def run3DSim(self):
-        #print(self.pointCloudPyScript)
         if not(self.pcSimStarted):
             self.pcSimStarted = True
-            #print(self.pointCloudPyScript)
-            #os.spawnv(os.P_NOWAIT, f"python {self.pointCloudPyScript}", [f"-i {self.sessionId}", f"-f {self.pcDataFolder}", "-s True"])
         return
     
     def changeExposure(self, exposure):
