@@ -1,3 +1,10 @@
+"""!
+ @authors Anojan Cherry (anojancherryaji@gmail.com)
+ @date 2023-09-14
+ @file I3DRobotics_gui_draft_10_mainDisp_parent.py
+ @brief Simple gui camera to monitor
+"""
+
 from PyQt5 import QtGui
 from py_support.I3DRobotics_gui_draft_10_mainDisp import Ui_mainWindow
 from py_support.I3DRobotics_gui_draft_10_toolbar_parent import toolbar_widgets

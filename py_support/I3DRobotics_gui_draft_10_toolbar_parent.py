@@ -1,3 +1,10 @@
+"""!
+ @authors Anojan Cherry (anojancherryaji@gmail.com)
+ @date 2023-09-14
+ @file I3DRobotics_gui_draft_10_toolbar_parent.py
+ @brief Simple gui camera to monitor
+"""
+
 from py_support.I3DRobotics_gui_draft_10_toolbar import Ui_Form
 from PyQt5.QtWidgets import (
     QApplication, QWidget

@@ -1,3 +1,10 @@
+"""!
+ @authors Anojan Cherry (anojancherryaji@gmail.com)
+ @date 2023-09-14
+ @file I3DRobotics_gui_draft_10_StreamService_2.py
+ @brief Simple gui camera to monitor
+"""
+
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import pyqtSignal, QThread
 
