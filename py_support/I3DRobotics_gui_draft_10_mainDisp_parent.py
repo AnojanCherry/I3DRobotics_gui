@@ -47,7 +47,7 @@ class mainDisp(Ui_mainWindow):
             a0: resize parameters that the system pass itself when resizing.
 
         Return:
-            Bool: returns true or false
+            None
         '''
         try:
             self.Stream.WindowresizeEvent()
