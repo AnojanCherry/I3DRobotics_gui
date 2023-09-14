@@ -384,6 +384,7 @@ class Stream(QThread):
         Return:
             None
         '''
+        print("Capturing data")
         fileFolder = self.pcDataFolder
         tme = time.time()
         if not(self.stream_rectify_var):
