@@ -40,3 +40,7 @@ An alternative way to download phase is provided in the following link.
   
   Catpure - Single shot.<br/>
   Record - Save all data in a continous stream.
+## Developer usefulness
+```python
+python -m PyQt5.uic.pyuic -x [FILENAME].ui -o [FILENAME].py
+```
