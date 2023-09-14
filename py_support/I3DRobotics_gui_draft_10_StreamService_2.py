@@ -162,7 +162,7 @@ class Stream(QThread):
             except Exception as e: # On errors do the following
                 print("[Warning!] "+str(e))
                 except_counter += 1
-                if except_counter <self.except_counter_max: # if the error is less than certain value, do not kill the program 
+                if except_counter <except_counter_max: # if the error is less than certain value, do not kill the program 
                     print(str(e))
                 else:
                     raise Exception(str(e))
