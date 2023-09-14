@@ -143,9 +143,8 @@ class mainDisp(Ui_mainWindow):
             self.event_child_toolbar_stereo_check(True)
             return False
         
-    def capture_data(self, capturebool):
-        if capturebool:
-            return self.Stream.capture_data()
+    def capture_data(self):
+        return self.Stream.capture_data()
     
     # Function to execute for when refreshing for devices
     def event_refresh_clicked(self):

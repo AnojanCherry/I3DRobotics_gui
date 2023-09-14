@@ -63,10 +63,7 @@ class toolbar_widgets(Ui_Form):
         Return:
             None
         '''
-        if self.ckbx_capture.isChecked():
-            if (self.parent.capture_data(self.ckbx_capture)):
-                self.ckbx_capture.setChecked(False)
-                print("Captured successfully")
+        self.parent.capture_data()
         return
     
     def event_exposure_changed(self):
