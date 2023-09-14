@@ -133,8 +133,9 @@ class Stream(QThread):
                                         self.record_data(3)
                                     try:
                                         self.vis.destroy_window() 
+                                        self.vis = False
                                     except: 
-                                        print("")
+                                        print("[Error] vis not destroyed")
                                 else:
                                     if (self.vis == False):
                                         self.vis = o3d.visualization.VisualizerWithEditing()
@@ -161,6 +162,7 @@ class Stream(QThread):
                             break
                 except_counter = 0
             except Exception as e:
+                print("[Warning!] "+str(e))
                 except_counter += 1
                 if except_counter <self.except_counter_max:
                     print(str(e))
