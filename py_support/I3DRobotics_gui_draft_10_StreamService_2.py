@@ -135,16 +135,16 @@ class Stream(QThread):
                                         self.vis.destroy_window() 
                                         self.vis = False
                                     except: 
-                                        print("[Error] vis not destroyed")
+                                        print("")
                                 else:
-                                    if (self.vis == False):
+                                    if (self.vis == False): # Create a open3d window if its not already created
                                         self.vis = o3d.visualization.VisualizerWithEditing()
                                         self.vis.create_window(width=800, height=600)
                                     file_name = os.path.join(self.pcDataFolder,"pointCloud_dataset.ply")
                                     save_success = phase.savePLY(file_name, self.xyz, self.rect_img_left)
                                     if self.record_data_bool:  # If record is set to true save the point cloud data
                                         self.record_data(4)
-                                    if (save_success):
+                                    if (save_success):  # Update the 3d window
                                         pcd = o3d.io.read_point_cloud(file_name)
                                         self.vis.clear_geometries()
                                         self.vis.add_geometry(pcd)
@@ -153,18 +153,16 @@ class Stream(QThread):
                                         self.vis.poll_events()
 
                         else:
-                            self.deviceCam.disconnect()
+                            self.deviceCam.disconnect() # Disconnect from camera upon failure
                             raise Exception("Failed to read stereo result")
-                        if self.pause:
+                        if self.pause: # Disconnect from camera when paused for any reason
                             self.deviceCam.disconnect()
-                            #out.release()
-                            #out2.release()
                             break
-                except_counter = 0
-            except Exception as e:
+                        except_counter = 0 # Reset counter to 0 after each successfull image acquistion
+            except Exception as e: # On errors do the following
                 print("[Warning!] "+str(e))
                 except_counter += 1
-                if except_counter <self.except_counter_max:
+                if except_counter <self.except_counter_max: # if the error is less than certain value, do not kill the program 
                     print(str(e))
                 else:
                     raise Exception(str(e))
@@ -172,6 +170,15 @@ class Stream(QThread):
         return
 
     def update_Device(self, chosenCamClass=False):
+        '''
+        Given a camera device detail, connect to it.
+
+        Parameter:
+            chosenCamClass (object): An object, refer to I3DRobotics_gui_draft_*_devices, containing details necessary to conect to it
+
+        Return:
+            None
+        '''
         if (chosenCamClass == False):
             self.reset_parameters(True)
         else:
@@ -184,8 +191,17 @@ class Stream(QThread):
                 raise Exception("Device type unknown")
         return
     
-    def reset_parameters(self, bool=False):
-        if (bool):
+    def reset_parameters(self, boolean: bool = False):
+        '''
+        Reset key parameters to default value
+
+        Parameter:
+            chosenCamClass (bool): An object, refer to I3DRobotics_gui_draft_*_devices, containing details necessary to conect to it
+
+        Return:
+            None
+        '''
+        if (boolean):
             # Default param
             self.infinitie_loop_bool = True
             self.pause = True
@@ -200,7 +216,16 @@ class Stream(QThread):
             self.setupFile()
         return
     
-    def update_Stream_frame_img(self, frame):
+    def update_Stream_frame_img(self, frame:list):
+        '''
+        Given an image list, it updates the images to the gui frame
+
+        Parameter:
+            frame (list): a list containing 2 frames, which will be updated to the gui frame.
+
+        Return:
+            None
+        '''
         if (self.frame_quantity == 2):
             _, _, frame_to_update_left = self.cv2Qimg(frame[0], True)
             self.labelWidth, self.labelHeight, frame_to_update_right = self.cv2Qimg(frame[1], True)
@@ -208,7 +233,19 @@ class Stream(QThread):
             self.right_widget.setPixmap(QPixmap.fromImage(frame_to_update_right))
         return
     
-    def cv2Qimg(self, frame, shorten):
+    def cv2Qimg(self, frame:cv2, shorten:bool):
+        '''
+        Given cv2 data, convert it to image format.
+
+        Parameter:
+            frame (cv2): cv2 matrix to convert to image
+            shorten (bool): if true will resize to fit the gui (Warning: may look too small or auto enlarge the gui at times, handle with care).
+
+        Return:
+            width (int): the new width of the image
+            height (int): the new height of the image
+            QImage (QImage): The image the data tranformed into. look for PyQt5.QtGui.QImage for more detail about format/type details.
+        '''
         frame_height, frame_width, _ = frame.shape
         width = self.parentWidget.width()-50
         height = round(width*(frame_height/frame_width))
@@ -222,20 +259,47 @@ class Stream(QThread):
         return width,height, QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888)
     
     def setup_raw(self):
+        '''
+        When called set up the stream so only raw data are streamed and computed and displayed.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        '''
         self.stream_rectify_var = False
         self.stream_stereo_var = False
         self.point_cloud = False
         return
     
-    def setup_rectifier(self, left_yaml, right_yaml):
+    def setup_rectifier(self, left_yaml:str, right_yaml:str):
+        '''
+        When called set up the stream so only rectified data are streamed and computed.
+
+        Parameter:
+            left_yaml (path): path to left yaml file
+            right_yaml (path): path to right yaml file
+
+        Return:
+            None
+        '''
         self.calibration = phase.calib.StereoCameraCalibration.calibrationFromYAML(left_yaml, right_yaml)
         self.stream_rectify_var = True
         self.stream_stereo_var = False
         self.point_cloud = False
-        #print("Mode: Rectifier")
         return
     
     def setup_stereo(self):
+        '''
+        When called set up the stream so only stereo data are streamed / computed and displayed.
+
+        Parameter:
+            None
+
+        Return:
+            True: returns true unless an error occures
+        '''
         self.stream_rectify_var = True
         self.stream_stereo_var = True
         self.point_cloud = False
@@ -256,10 +320,18 @@ class Stream(QThread):
             )
 
         self.matcher = phase.stereomatcher.createStereoMatcher(stereo_params)
-        #print("Mode: Stereo")
         return True
     
     def setup_pointCloud(self):
+        '''
+        When called set up the stream so only point cloud data are streamed / computed  and displayed.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        '''
         self.stream_rectify_var = True
         self.stream_stereo_var = True
         self.point_cloud = True
@@ -267,6 +339,15 @@ class Stream(QThread):
         
     
     def WindowresizeEvent(self):
+        '''
+        A function to call when frame needs to be adjusted. Will fit to fill gui frame
+
+        Parameter:
+            None
+
+        Return:
+            None
+        '''
         dw = 15
         width = self.parentWidget.width()-25
         if self.frame_quantity == 2:
@@ -280,11 +361,29 @@ class Stream(QThread):
             self.pcSimStarted = True
         return
     
-    def changeExposure(self, exposure):
+    def changeExposure(self, exposure:int):
+        '''
+        set new exposure value
+
+        Parameter:
+            exposure (int): will update the exposure value
+
+        Return:
+            None
+        '''
         self.deviceCam.setExposure(exposure)
         return
     
-    def capture_data(self, capture):
+    def capture_data(self):#, capture:bool):
+        '''
+        Save frame externally. 
+
+        Parameter:
+            None
+
+        Return:
+            None
+        '''
         fileFolder = self.pcDataFolder
         tme = time.time()
         if not(self.stream_rectify_var):
@@ -311,7 +410,16 @@ class Stream(QThread):
             return True
         return False
     
-    def record_data(self, id):
+    def record_data(self, id:int):
+        '''
+        Save frame externally. 
+
+        Parameter:
+            id (int): if save the raw, rectified, stereo, and point cloud depending on the value. For example if id = 2, save the first 2 parameters (2xraw + 2xrectified datas) 
+
+        Return:
+            bool: Return False when all is run successfully
+        '''
         fileFolder = self.pcDataFolder
         tme = time.time()
         if id>=1:

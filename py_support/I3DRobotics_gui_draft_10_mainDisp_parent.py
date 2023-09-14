@@ -145,7 +145,7 @@ class mainDisp(Ui_mainWindow):
         
     def capture_data(self, capturebool):
         if capturebool:
-            return self.Stream.capture_data(capturebool)
+            return self.Stream.capture_data()
     
     # Function to execute for when refreshing for devices
     def event_refresh_clicked(self):
