@@ -35,7 +35,7 @@ class toolbar_widgets(Ui_Form):
         self.ckbx_PointCloud.stateChanged.connect(self.event_point_cloud_chbx_changed)
         self.ckbx_PointCloud.setCheckable(False)
         self.spnbx_exposure.valueChanged.connect(self.event_exposure_changed)
-        self.ckbx_capture.toggled.connect(self.event_capture)
+        self.ckbx_capture.clicked.connect(self.event_capture)
         self.ckbx_record.stateChanged.connect(self.event_record)
         return
     
